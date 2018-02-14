@@ -1,0 +1,33 @@
+# To verify your understanding of these objectives, ask yourself the following questions
+
+## 1. How does the framework interact with the various codepools?
+
+Voir 1. Describe Magento codepools et 6. Explain class naming conventions and their relationship with the autoloader
+
+
+## 2. What constitutes a namespace and a module?
+
+Voir 6. Explain class naming conventions and their relationship with the autoloader
+
+Un nom d'espace est un répertoire dans *app/code* qu va contenir un ou plusieurs modules.
+
+Un module est constitué au minimum de deux fichiers de configuration:
+* dans *app/code/NameSpace/ModuleName/etc/config.xml*
+* dans *app/etc/modules/NameSpace_ModuleName.xml*
+
+
+## 3. What does the structure of a complete theme look like?
+
+La structure d'un thème est la suivante: 
+
+dans *design*:
+* *app/design/{area}/{package}/{theme}/etc/*.xml*
+* *-----------------------------------/layout/*.xml*
+* *-----------------------------------/locale/{language_code}.csv*
+* *-----------------------------------/template/*.phtml*
+
+dans *skin*
+* *app/skin/{area}/{package}/{theme}/js/*.js*
+* *---------------------------------/css/*.css*
+* *---------------------------------/images/*.**
+
