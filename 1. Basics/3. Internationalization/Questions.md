@@ -8,27 +8,32 @@
 
 ### 2. In what way does the developer mode influence how Magento handles translations?
 
-Not sure how to answer but making strings translatable.
+[Source](http://excellencemagentoblog.com/question/in-what-way-does-the-developer-mode-influence-how-magento-handles-translations/)
 
+Quand le mode développeur est actif, les traductons globales sont désactivées (pour les cas de traductions dupliquées). Ce qui veux dire que seules les traductions internes au module seront effectives.
+
+Par exemple, si nous avons une traduction `$this->__('XYZ')` dans le module *Mage_Checkout* et que la traduction est présente dans *Mage_Catalog* et *Mage_Contact*, elle ne s'appliquera pas.
+
+Pour simplifier toutes les traductions ambigues sont supprimés.
 
 ### 3. How many options exist to add a custom translation for any given string?
 
-- Database Translation
-- Module Translation
-- Theme Translation
+- Base de donnée 
+- Module 
+- Theme 
 
 ### 4. What is the priority of translation options?
 
-- Database Translations
-- Theme Translations
-- Module Translation
+Theme > Module > BDD
 
 
 ### 5. How are translation conflicts (when two modules translate the same string) processed by Magento?
 
-**Example:**
+**Exemple:**
 
-    Mage::helper("module_a")->__("Hello");
-    Mage::helper("module_b")->__("Hello");
+```php
+Mage::helper("module_a")->__("Hello");
+Mage::helper("module_b")->__("Hello");
+```
 
-In the method _addData() will create 2 keys for each module to keep module string separate.
+Dans la méthode `_addData()` cela va créer 2 clés pour chaque module pour garder les chaines de caractères séparées.
