@@ -24,7 +24,7 @@ Pour simplifier toutes les traductions ambigues sont supprimés.
 
 ### 4. What is the priority of translation options?
 
-Theme > Module > BDD
+BDD > Theme > Module 
 
 
 ### 5. How are translation conflicts (when two modules translate the same string) processed by Magento?
