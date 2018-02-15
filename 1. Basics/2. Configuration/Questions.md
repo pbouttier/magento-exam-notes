@@ -1,70 +1,71 @@
 ### 1. How does the framework discover active modules and their configuration?
 
+```php
+Mage_Core_Model_Config->_loadDeclaredModules()
+```
 
-    Mage_Core_Model_Config->_loadDeclaredModules()
+Cette méthode va chercher tous les fichiers XML dans *app/etc/modules* et va charger les modules correspondant.
+En premier il appelle *_getDeclaredModuleFiles* pour récupérer tous les fichiers.
 
+Ensuite il boucle sur les fichiers et fait:
 
-This method searches for any xml files under app/etc/modules and loads the modules.
-Firstly it calls *_getDeclaredModuleFiles* to get all the files
-
-It then loops through the files and does the following:
-
-- Loads the module configuration
-- Adds the modules names which it depends into an array
-- Sorts the modules it depends on in *_sortModuleDepends*
-- Creates the configuration *Mage_Core_Model_Config_Base* and adds the XML *<config><modules/></config>* to the class
-- Adds modules to the configuration
-- Adds the modules it depends on to the configuration
+* Il charge la configuration du module
+* Il ajoute le nom du module dans un tableau
+* Il trie les modules listés dans ce tableau avec *_sortModuleDepends*
+* Il créer la configuration *Mage_Core_Model_Config_Base* et ajoute les nodes XML *<config><modules/></config>* à la classe
+* Il ajoute le module à la configuration
+* Il charge les modules depuis cette configuration
 
 ### 2. What are the common methods with which the framework accesses its configuration values and areas?
 
-
-- Mage::->getStoreConfig($path);
-- Mage::app()->getStore()->getConfig($path);
-- Mage::getStoreConfigFlag($path); *Checks if a value exists*
-- Mage::getConfig()->getNode($path);
-
+```php
+Mage::->getStoreConfig($path);
+Mage::app()->getStore()->getConfig($path);
+Mage::getStoreConfigFlag($path); //Checks if a value exists
+Mage::getConfig()->getNode($path);
+```
 
 ### 3. How are per-store configuration values established in the XML DOM?
 
-The per-store config values are defined in the config.xml file of your module under the <stores> node and under the <store_code>
+Pour chaque boutique (store) les valeurs de configuration sont définies dans le fichier *config.xml* sous les nodes *<stores>* et *<store_code>*.
 
-**Example:** If you wanted to override the theme
+**Exemple:** Si l'on veux surcharger le thème
 
-    <stores>
-        <default>
-            <design>
-                <package>
-                    <name>default</name>
-                </package>
-                <theme>
-                    <default>modern</default>
-                </theme>
-            </design>
-        </default>
-    </stores>
+```xml
+<stores>
+    <default>
+        <design>
+            <package>
+                <name>default</name>
+            </package>
+            <theme>
+                <default>modern</default>
+            </theme>
+        </design>
+    </default>
+</stores>
+```
+
+On peut également le faire avec les nodes *<websites>* et *<website_code>*
+
+```xml
+<websites>
+    <base>
+        <design>
+            <package>
+                <name>default</name>
+            </package>
+            <theme>
+                <default>modern</default>
+            </theme>
+        </design>
+    </base>
+</websites>
+```
 
 
-You can also do this with the <websites> and <website_code> nodes
 
-
-    <websites>
-        <base>
-            <design>
-                <package>
-                    <name>default</name>
-                </package>
-                <theme>
-                    <default>modern</default>
-                </theme>
-            </design>
-        </base>
-    </websites>
-
-
-
-
-**Note:** Answer taken from [http://magestudyguide.com/#how-are-per-store-configuration-values-established-in-the-xml-dom?](http://magestudyguide.com/#how-are-per-store-configuration-values-established-in-the-xml-dom?)
+**Note:** Informations récupérer depuis [http://magestudyguide.com/#how-are-per-store-configuration-values-established-in-the-xml-dom?](http://magestudyguide.com/#how-are-per-store-configuration-values-established-in-the-xml-dom?)
 
 
 ### 4. By what process do the factory methods and autoloader enable class instantiation?
@@ -72,19 +73,25 @@ You can also do this with the <websites> and <website_code> nodes
 - Varien_Autoload
 - spl_autoload_register
 
-For further information please read [Explain how Magento loads and manipulates configuration information](https://github.com/colinmurphy/magento-exam-notes/blob/master/1.%20Basics/2.%20Configuration/1.Explain%20how%20Magento%20loads%20and%20manipulates%20configuration%20information.md)
+Pour plus d'informations voir [Explain how Magento loads and manipulates configuration information](https://github.com/pbouttier/magento-exam-notes/blob/master/1.%20Basics/2.%20Configuration/1.Explain%20how%20Magento%20loads%20and%20manipulates%20configuration%20information.md)
 
 ### 5. Which class types have configured prefixes, and how does this relate to class overrides?
 
-Not too sure about this question but I think this is what it means:
+Les 3 préfixes de classes sont: Model, Helper, Block.
 
-You can override classes in 2 ways:
+Dans *config.xml* quand nous les surchargeons nous devons ajouter ces préfixes
 
-- Config Rewrite
-- Adding a class file relative in another codePool that is loaded beforehand.
-e.g. create app/code/local/Mage/Core/Model/Product.php to override Mage_Catalog_Model_Product
+In our config.xml when we rewrite we need put it under these 3 prefixes
 
-This is not recommended but can be done due to the multiple paths used in set_include_path() in app/Mage.php.
+```xml
+<blocks>
+   <catalog>
+      <rewrite>
+         <list>New_Block_Class</list>
+      </rewrite>
+   <catalog>
+</blocks>
+```
 
 
 ### 6. Which class types and files have explicit paths?
@@ -102,52 +109,58 @@ Not sure what this means?
 
 **class**
 
-Name of the class of the observer e.g. Colin_Bootstrap_Model_Observer
+Le nom de la classe de l'observer est par exemple NameSpace_NameModule_Model_Observer
 
 
 **method**
 
-Name of the method called
+Le nom de la méthode appellée
 
 ### 8. What are the interface and configuration options for automatically fired events?
 
-This is registering an observer.
+Il faut dispatch des évènments.
 
 ### 9. What is the structure of event observers, and how are properties accessed therein?
 
-This is how an observer works e.g.
+Un évènement est dispatché de la façon suivante: 
 
-      Mage::dispatchEvent('catalog_product_get_final_price', array('product' => $product, 'qty' => $qty));
+```php
+Mage::dispatchEvent('catalog_product_get_final_price', array('product' => $product, 'qty' => $qty));
+```
 
+Et on accède à ces paramètres comme suit:
 
-Parameters are then accessed as follows:
-
-    public function myObserverMethod($observer)
-    {
-      $product = $observer->getEvent()->getProduct();
-      $qty = $observer->getEvent()->getQty();
-      /* Do something */
-    }
+```php
+public function myObserverMethod($observer)
+{
+  $product = $observer->getEvent()->getProduct();
+  $qty = $observer->getEvent()->getQty();
+  /* Do something */
+}
+```
 
 ### 10. What configuration parameters are available for cron jobs?
 
-Under global -> events -> crontab -> name_of_cron there are:
+Sous la node global -> events -> crontab -> name_of_cron nous avons:
 
 - schedule -> cron_expr
 - run -> model
 
-Example:
+Exemple:
 
-      <global>
-          <crontab>
-              <jobs>
-                  <colin_bootstrap_cron>
-                      <schedule>
-                         <cron_expr>*/1 * * * *</cron_expr>
-                      </schedule>
-                      <run>
-                          <model>colin_bootstrap/observer_cron::runCustomCronJob</model>
-                      </run>
-                  </colin_bootstrap_cron>
-              </jobs>
-          </crontab>
+```xml
+<global>
+  <crontab>
+      <jobs>
+          <namespace_namemodule_cron>
+              <schedule>
+                 <cron_expr>*/1 * * * *</cron_expr>
+              </schedule>
+              <run>
+                  <model>namespace_namemodule/observer_cron::runCustomCronJob</model>
+              </run>
+          </namespace_namemodule_cron>
+      </jobs>
+  </crontab>
+</global>
+```
