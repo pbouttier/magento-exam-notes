@@ -8,24 +8,24 @@ More info on autoloading can be found [here](https://github.com/colinmurphy/mage
 
 ### 2. How and when does Magento load the base configuration, the module configuration, and the database configuration?
 
-1. Base  - Mage_Core_Model_Config->loadBase()
-2. Module - Mage_Core_Model_Config->loadModules()
-3. Database - Mage_Core_Model_Config->loadDb()
+1. Base  - `Mage_Core_Model_Config->loadBase()`
+2. Module - `Mage_Core_Model_Config->loadModules()`
+3. Database - `Mage_Core_Model_Config->loadDb()`
 
 
 ### 3. How and when are the two main types of setup script executed?
 
-- Mage_Core_Model_Resource_Setup->applyAllUpdates() - Resource Scripts
-- Mage_Core_Model_Resource_Setup->applyAllDataUpdates() - Data Scripts
+- `Mage_Core_Model_Resource_Setup->applyAllUpdates()` - Resource Scripts
+- `Mage_Core_Model_Resource_Setup->applyAllDataUpdates()` - Data Scripts
 
-applyAllUpdates() called in *Mage_Core_Model_App->_initModules()* after module config loaded.
-applyAllDataUpdates called in *Mage_Core_Model_App->run()* after modules loaded and store parameters set.
+`applyAllUpdates()` called in `Mage_Core_Model_App->_initModules()` after module config loaded.
+`applyAllDataUpdates` called in `Mage_Core_Model_App->run()` after modules loaded and store parameters set.
 
 
 ### 4. When does Magento decide which store view to use, and when is the current locale set?
 
 1. In the index.php we set the run type and code.
-2. Then after the module config is loaded we call - Mage_Core_Model_App->run() calls *Mage_Core_Model_App->_initCurrentStore();*
+2. Then after the module config is loaded we call - `Mage_Core_Model_App->run()` calls `Mage_Core_Model_App->_initCurrentStore();`
 
 #### Mage_Core_Model_App->\_initCurrentStore();
 
@@ -36,7 +36,7 @@ This sets the property current store by doing a switch statement on the type (we
 
 #### 1. index.php/.htaccess
 
-$\_SERVER['Mage_RUN_CODE'] and $\_SERVER['Mage_RUN_TYPE'];
+`$\_SERVER['Mage_RUN_CODE']` and `$\_SERVER['Mage_RUN_TYPE'];`
 
 e.g.
 
@@ -46,5 +46,5 @@ e.g.
 
 ### 6. When are the request and response objects initialized?
 
-Early on when Mage_Core_Model_App->run() is called.
+Early on when `Mage_Core_Model_App->run()` is called.
 Though the request and response would need to set as values in the options which is not passed in the method by default.
